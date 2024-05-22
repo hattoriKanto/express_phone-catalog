@@ -1,5 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import favoriteRouter from './routes/favorites.route';
 import { seedDatabase } from './utils/seeding';
 
 const app = express();
@@ -8,6 +9,11 @@ const prisma = new PrismaClient();
 
 app.use(express.json());
 app.use(express.static('public'));
+app.get('/', (_, res) => {
+  res.send('Hello World!');
+});
+
+app.use('/favorites', favoriteRouter);
 
 async function testConnection() {
   try {
