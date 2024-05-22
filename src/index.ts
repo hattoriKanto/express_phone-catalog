@@ -2,6 +2,7 @@ import express from 'express';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import { PrismaClient } from '@prisma/client';
+import favoriteRouter from './routes/favorites.route';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -28,6 +29,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get('/', (_, res) => {
   res.send('Hello World!');
 });
+
+app.use('/favorites', favoriteRouter);
 
 async function testConnection() {
   try {
