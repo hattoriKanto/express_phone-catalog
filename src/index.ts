@@ -1,9 +1,11 @@
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
+import { PrismaClient } from '@prisma/client';
 
 const app = express();
 const port = process.env.PORT || 3000;
+const prisma = new PrismaClient();
 
 const swaggerOptions = {
   definition: {
@@ -27,6 +29,20 @@ app.get('/', (_, res) => {
   res.send('Hello World!');
 });
 
-app.listen(port, () => {
+async function testConnection() {
+  try {
+    await prisma.$connect();
+    console.log('Connected successfully to the database');
+    const now = await prisma.$queryRaw`SELECT NOW()`;
+    console.log('Current time from the database:', now);
+  } catch (error) {
+    console.error('Failed to connect to the database', error);
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+app.listen(port, async () => {
   console.log(`Server running on http://localhost:${port}`);
+  await testConnection();
 });
