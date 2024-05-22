@@ -1,31 +1,14 @@
 import express from 'express';
-import swaggerUi from 'swagger-ui-express';
-import swaggerJsdoc from 'swagger-jsdoc';
 import { PrismaClient } from '@prisma/client';
 import favoriteRouter from './routes/favorites.route';
+import { seedDatabase } from './utils/seeding';
 
 const app = express();
 const port = process.env.PORT || 3000;
 const prisma = new PrismaClient();
 
-const swaggerOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Hello World API',
-      version: '1.0.0',
-      description: 'A simple Express Hello World API',
-    },
-  },
-  // Path to the API docs
-  apis: ['./**/*.ts'], // Adjust this later
-};
-
-const swaggerSpec = swaggerJsdoc(swaggerOptions);
-
 app.use(express.json());
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
+app.use(express.static('public'));
 app.get('/', (_, res) => {
   res.send('Hello World!');
 });
@@ -45,7 +28,21 @@ async function testConnection() {
   }
 }
 
+app.get('/', (_, res) => {
+  res.send('Hello World!');
+});
+
 app.listen(port, async () => {
   console.log(`Server running on http://localhost:${port}`);
-  await testConnection();
+  try {
+    if (process.env.TEST_CONNECTION === 'true') {
+      await testConnection();
+    }
+
+    if (process.env.SEEDING === 'true') {
+      await seedDatabase();
+    }
+  } catch (error) {
+    console.error('Error during init:', error);
+  }
 });
