@@ -1,16 +1,23 @@
 import { PrismaClient } from '@prisma/client';
 import { Category, ErrorMessages, ProductCard } from '../types';
 
-type GetAll = (category: string) => Promise<ProductCard[]>;
+type GetAll = (
+  category: string,
+  params: { size?: number; page?: number },
+) => Promise<ProductCard[]>;
 
 const prisma = new PrismaClient();
 
-export const getAll: GetAll = async category => {
+export const getAll: GetAll = async (category, params) => {
   if (!Object.values(Category).find(cat => cat === category)) {
     throw new Error(ErrorMessages.NOT_FOUND);
   }
+  const size = params.size || 10;
+  const page = params.page || 1;
 
   const result = await prisma.product.findMany({
+    skip: size * (page - 1),
+    take: size,
     where: { category: `${category}` },
     select: {
       id: true,
