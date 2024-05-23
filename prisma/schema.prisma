@@ -34,7 +34,6 @@ model Product {
   camera          String?
   zoom            String?
   cell            String[]
-  year            Int?
   favorites         Favorite[]
   cartItems         CartItem[]
 }
