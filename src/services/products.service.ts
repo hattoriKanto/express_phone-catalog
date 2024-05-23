@@ -10,8 +10,7 @@ type GetAll = (
     maxPrice?: number;
   },
   sortParams: { sortBy?: string },
-) => Promise<ProductCard[]>;
-
+) => Promise<Product[]>;
 
 const prisma = new PrismaClient();
 
@@ -60,25 +59,10 @@ export const getAll: GetAll = async (
   }
 
   const result = await prisma.product.findMany({
-    where: { category: category },
     skip: perPage * (page - 1),
     take: perPage,
     where: filters,
     orderBy,
-    select: {
-      id: true,
-      category: true,
-      slug: true,
-      name: true,
-      priceRegular: true,
-      priceDiscount: true,
-      screen: true,
-      capacity: true,
-      color: true,
-      ram: true,
-      year: true,
-      images: true,
-    },
   });
 
   return result;
