@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { Category, ErrorMessages, ProductCard } from '../types';
+import { Category, ErrorMessages, Product } from '../types';
 
 type GetAll = (
   category: string,
@@ -11,6 +11,7 @@ type GetAll = (
   },
   sortParams: { sortBy?: string },
 ) => Promise<ProductCard[]>;
+
 
 const prisma = new PrismaClient();
 
@@ -59,6 +60,7 @@ export const getAll: GetAll = async (
   }
 
   const result = await prisma.product.findMany({
+    where: { category: category },
     skip: perPage * (page - 1),
     take: perPage,
     where: filters,
@@ -78,20 +80,6 @@ export const getAll: GetAll = async (
       images: true,
     },
   });
-  const products = result.map(product => ({
-    id: product.id,
-    category: product.category,
-    slug: product.slug,
-    name: product.name,
-    priceRegular: product.priceRegular,
-    priceDiscount: product.priceDiscount,
-    screen: product.screen,
-    capacity: product.capacity,
-    color: product.color,
-    ram: product.ram,
-    year: product.year,
-    image: product.images[0],
-  }));
 
-  return products;
+  return result;
 };
