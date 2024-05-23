@@ -13,13 +13,10 @@ export const getAll: GetAll = async (req, res) => {
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === ErrorMessages.NOT_FOUND) {
-        res.status(HTTPCodes.NOT_FOUND).send(ErrorMessages.NOT_FOUND);
-        return;
+        return (res.statusCode = HTTPCodes.NOT_FOUND);
       }
     }
 
-    res
-      .status(HTTPCodes.INTERNAL_SERVER_ERROR)
-      .send(ErrorMessages.INTERNAL_SERVER_ERROR);
+    res.statusCode = HTTPCodes.INTERNAL_SERVER_ERROR;
   }
 };
