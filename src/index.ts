@@ -1,7 +1,7 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import favoriteRouter from './routes/favorites.route';
-import * as productsRouter from './routes/products.route';
+import productsRouter from './routes/products.route';
 import { seedDatabase } from './utils/seeding';
 
 const app = express();
@@ -14,9 +14,8 @@ app.get('/', (_, res) => {
   res.send('Hello World!');
 });
 
-app.use('/products', productsRouter.router);
+app.use('/products', productsRouter);
 app.use('/favorites', favoriteRouter);
-app.use('/', productsRouter.router);
 
 async function testConnection() {
   try {

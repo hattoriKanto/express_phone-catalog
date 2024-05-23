@@ -1,6 +1,9 @@
-import express from 'express';
-import * as productsController from '../controllers/products.controller';
+import { Router } from 'express';
+import { getAll, getNewestProducts } from '../controllers/products.controller';
 
-export const router = express.Router();
+const router = Router();
 
-router.get('/:category', productsController.getAll);
+router.get('/new', getNewestProducts);
+router.get('/:category', getAll);
+
+export default router;

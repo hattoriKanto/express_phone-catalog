@@ -52,3 +52,13 @@ export const getAll: GetAll = async (req, res) => {
     res.statusCode = HTTPCodes.INTERNAL_SERVER_ERROR;
   }
 };
+
+export const getNewestProducts = async (_: Request, res: Response) => {
+  try {
+    const products = await productsServices.getNewestProducts();
+
+    res.status(200).send(products);
+  } catch (error) {
+    res.status(404).json({ error: 'list is empty' });
+  }
+};

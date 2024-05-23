@@ -80,3 +80,31 @@ export const getAll: GetAll = async (
 
   return result;
 };
+
+export const getNewestProducts = async () => {
+  try {
+    const products = await prisma.product.findMany({
+      orderBy: {
+        id: 'desc',
+      },
+      take: 20,
+      select: {
+        id: true,
+        category: true,
+        slug: true,
+        name: true,
+        priceRegular: true,
+        priceDiscount: true,
+        screen: true,
+        capacity: true,
+        color: true,
+        ram: true,
+        images: true,
+      },
+    });
+
+    return products;
+  } catch (error) {
+    throw new Error('Error fetching products');
+  }
+};
