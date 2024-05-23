@@ -14,6 +14,7 @@ app.get('/', (_, res) => {
   res.send('Hello World!');
 });
 
+app.use('/products', productsRouter.router);
 app.use('/favorites', favoriteRouter);
 app.use('/', productsRouter.router);
 

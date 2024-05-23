@@ -42,12 +42,3 @@ export async function seedDatabase() {
 
   console.log('Database has been seeded!');
 }
-
-seedDatabase()
-  .catch(e => {
-    console.error('Error during database seeding:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
