@@ -6,7 +6,6 @@ type GetDiscount = () => Promise<Product[]>;
 
 export const GetDiscount: GetDiscount = async () => {
   const result = await prisma.product.findMany({
-    take: 20,
     select: {
       id: true,
       category: true,
@@ -31,5 +30,6 @@ export const GetDiscount: GetDiscount = async () => {
       (a, b) =>
         b.priceRegular - b.priceDiscount - (a.priceRegular - a.priceDiscount),
     )
+    .slice(0, 20)
     .sort((a, b) => b.category.localeCompare(a.category));
 };
