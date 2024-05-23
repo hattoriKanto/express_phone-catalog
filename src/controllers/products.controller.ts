@@ -6,9 +6,41 @@ type GetAll = (req: Request, res: Response) => void;
 
 export const getAll: GetAll = async (req, res) => {
   try {
+    const { perPage, page, sortBy, query, minPrice, maxPrice } = req.query;
     const { category } = req.params;
-    const products = await productsServices.getAll(category);
+    const filterParams: {
+      query?: string;
+      minPrice?: number;
+      maxPrice?: number;
+    } = {};
+    const pageParams: { perPage?: number; page?: number } = {};
+    const sortParams: { sortBy?: string } = {};
+    if (typeof Number(perPage) === 'number') {
+      pageParams.perPage = Number(perPage);
+    }
+    if (typeof Number(page) === 'number') {
+      pageParams.page = Number(page);
+    }
 
+    if (typeof sortBy === 'string') {
+      sortParams.sortBy = sortBy;
+    }
+
+    if (typeof query === 'string') {
+      filterParams.query = query;
+    }
+    if (typeof Number(minPrice) === 'number') {
+      filterParams.minPrice = Number(minPrice);
+    }
+    if (typeof Number(maxPrice) === 'number') {
+      filterParams.maxPrice = Number(maxPrice);
+    }
+    const products = await productsServices.getAll(
+      category,
+      pageParams,
+      filterParams,
+      sortParams,
+    );
     res.status(HTTPCodes.OK).send(products);
   } catch (error) {
     if (error instanceof Error) {
