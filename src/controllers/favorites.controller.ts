@@ -42,15 +42,37 @@ export const addFavorite = async (req: Request, res: Response) => {
 };
 
 export const removeFavorite = async (req: Request, res: Response) => {
-  const { id } = req.body;
+  const { userId, productId } = req.body;
 
-  if (!id || typeof id !== 'number') {
+  if (
+    !userId ||
+    typeof userId !== 'number' ||
+    !productId ||
+    typeof productId !== 'number'
+  ) {
     return res.sendStatus(422);
   }
 
-  await prisma.favorite.delete({
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+  });
+
+  if (!product) {
+    return res.status(404).json({ error: 'Product not found' });
+  }
+
+  await prisma.favorite.deleteMany({
     where: {
-      id,
+      userId,
+      productId,
     },
   });
 
