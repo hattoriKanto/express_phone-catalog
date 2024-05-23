@@ -1,5 +1,10 @@
 import { PrismaClient } from '@prisma/client';
-import { Category, ErrorMessages, ProductCard } from '../types';
+import {
+  Category,
+  ErrorMessages,
+  ProductCard,
+  ProductExpanded,
+} from '../types';
 
 type GetAll = (category: string) => Promise<ProductCard[]>;
 
@@ -43,4 +48,16 @@ export const getAll: GetAll = async category => {
   }));
 
   return products;
+};
+
+export const getById = async (id: number): Promise<ProductExpanded | null> => {
+  const result = await prisma.product.findUnique({
+    where: { id },
+  });
+
+  if (result === null) {
+    throw new Error(ErrorMessages.NOT_FOUND);
+  }
+
+  return result;
 };
