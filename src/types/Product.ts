@@ -6,8 +6,8 @@ export interface Product {
   slug: string;
   name: string;
   color: string;
-  priceRegular: number;
-  priceDiscount: number;
+  fullPrice: number;
+  price: number;
   ram: string;
   images: string[];
 }
