@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-import { Category, ErrorMessages, Product } from '../types';
+import { PrismaClient, Product } from '@prisma/client';
+import { Category, ErrorMessages } from '../types';
 
 type GetAll = (
   category: string,
@@ -63,19 +63,19 @@ export const getAll: GetAll = async (
     skip: perPage * (page - 1),
     take: perPage,
     orderBy,
-    select: {
-      id: true,
-      category: true,
-      slug: true,
-      name: true,
-      priceRegular: true,
-      priceDiscount: true,
-      screen: true,
-      capacity: true,
-      color: true,
-      ram: true,
-      images: true,
-    },
+    // select: {
+    //   id: true,
+    //   category: true,
+    //   slug: true,
+    //   name: true,
+    //   fullPrice: true,
+    //   price: true,
+    //   screen: true,
+    //   capacity: true,
+    //   color: true,
+    //   ram: true,
+    //   images: true,
+    // },
   });
 
   return result;
@@ -119,8 +119,8 @@ export const getNewestProducts = async () => {
         category: true,
         slug: true,
         name: true,
-        priceRegular: true,
-        priceDiscount: true,
+        fullPrice: true,
+        price: true,
         screen: true,
         capacity: true,
         color: true,

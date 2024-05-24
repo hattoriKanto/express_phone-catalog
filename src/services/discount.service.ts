@@ -8,7 +8,7 @@ export const GetDiscount: GetDiscount = async () => {
   const result: Product[] =
     await prisma.$queryRaw`SELECT "id", "category", "slug", "name", "priceRegular", "priceDiscount", "screen", "capacity", "color", "ram", "images"
   FROM "Product"
-  ORDER BY "priceRegular" - "priceDiscount" DESC
+  ORDER BY "fullPrice" - "price" DESC
   LIMIT 20;`;
 
   if (result.length === 0) {
