@@ -1,35 +1,19 @@
-import { PrismaClient } from '@prisma/client';
-import { ErrorMessages, Product } from '../types';
+import { PrismaClient, Product } from '@prisma/client';
+import { ErrorMessages } from '../types';
 const prisma = new PrismaClient();
 
 type GetDiscount = () => Promise<Product[]>;
 
 export const GetDiscount: GetDiscount = async () => {
-  const result = await prisma.product.findMany({
-    select: {
-      id: true,
-      category: true,
-      slug: true,
-      name: true,
-      priceRegular: true,
-      priceDiscount: true,
-      screen: true,
-      capacity: true,
-      color: true,
-      ram: true,
-      images: true,
-    },
-  });
+  const result: Product[] =
+    await prisma.$queryRaw`SELECT "id", "category", "slug", "name", "priceRegular", "priceDiscount", "screen", "capacity", "color", "ram", "images"
+  FROM "Product"
+  ORDER BY "priceRegular" - "priceDiscount"
+  LIMIT 20;`;
 
   if (result.length === 0) {
     throw new Error(ErrorMessages.NOT_FOUND);
   }
 
-  return result
-    .sort(
-      (a, b) =>
-        b.priceRegular - b.priceDiscount - (a.priceRegular - a.priceDiscount),
-    )
-    .slice(0, 20)
-    .sort((a, b) => b.category.localeCompare(a.category));
+  return result;
 };

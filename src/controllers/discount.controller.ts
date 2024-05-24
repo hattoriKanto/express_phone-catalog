@@ -5,7 +5,6 @@ import { ErrorMessages, HTTPCodes } from '../types';
 type GetDiscount = (req: Request, res: Response) => void;
 
 export const GetDiscount: GetDiscount = async (req, res) => {
-  console.log('hello');
   try {
     const discounts = await discountService.GetDiscount();
     res.status(HTTPCodes.OK).send(discounts);
