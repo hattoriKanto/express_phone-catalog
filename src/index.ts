@@ -33,7 +33,6 @@ app.use(authRouter);
 app.use('/products', productsRouter);
 app.use('/favorites', favoriteRouter);
 app.use('/discount', discountRouter.router);
-app.use('/', productsRouter);
 
 app.use(errorMiddleware);
 app.listen(port, async () => {
