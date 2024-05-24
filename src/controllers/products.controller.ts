@@ -84,3 +84,30 @@ export const getNewestProducts = async (_: Request, res: Response) => {
     res.status(404).json({ error: 'list is empty' });
   }
 };
+
+type getRecommendedProducts = (req: Request, res: Response) => void;
+
+export const getRecommendedProducts: getRecommendedProducts = async (
+  req,
+  res,
+) => {
+  try {
+    const { id } = req.params;
+    const product = await productsServices.getById(+id);
+    const { color } = product;
+    const recommendedProductsList =
+      await productsServices.getRecommendedProductsList(Number(id), color);
+
+    res.status(HTTPCodes.OK).send(recommendedProductsList);
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === ErrorMessages.NOT_FOUND) {
+        res.status(HTTPCodes.NOT_FOUND).send(ErrorMessages.NOT_FOUND);
+        return;
+      }
+    }
+    res
+      .status(HTTPCodes.INTERNAL_SERVER_ERROR)
+      .send(ErrorMessages.INTERNAL_SERVER_ERROR);
+  }
+};
