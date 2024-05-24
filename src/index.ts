@@ -1,21 +1,24 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import favoriteRouter from './routes/favorites.route';
+import productsRouter from './routes/products.route';
 import * as productsRouter from './routes/products.route';
 import * as discountRouter from './routes/discount.route';
 import { seedDatabase } from './utils/seeding';
+import cors from 'cors';
 
 const app = express();
 const port = process.env.PORT || 3000;
 const prisma = new PrismaClient();
 
 app.use(express.json());
+app.use(cors());
 app.use(express.static('public'));
 app.get('/', (_, res) => {
   res.send('Hello World!');
 });
 
-app.use('/products', productsRouter.router);
+app.use('/products', productsRouter);
 app.use('/favorites', favoriteRouter);
 app.use('/discount', discountRouter.router);
 app.use('/', productsRouter.router);
