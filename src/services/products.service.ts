@@ -39,15 +39,15 @@ export const getAll: GetAll = async (
   };
 
   if (minPrice) {
-    filters.priceDiscount = {
-      ...filters.priceDiscount,
+    filters.price = {
+      ...filters.price,
       gte: Number(minPrice),
     };
   }
 
   if (maxPrice) {
-    filters.priceDiscount = {
-      ...filters.priceDiscount,
+    filters.price = {
+      ...filters.price,
       lte: Number(maxPrice),
     };
   }
@@ -68,8 +68,8 @@ export const getAll: GetAll = async (
       category: true,
       slug: true,
       name: true,
-      priceRegular: true,
-      priceDiscount: true,
+      fullPrice: true,
+      price: true,
       screen: true,
       capacity: true,
       color: true,
@@ -105,8 +105,8 @@ export const getNewestProducts = async () => {
         category: true,
         slug: true,
         name: true,
-        priceRegular: true,
-        priceDiscount: true,
+        fullPrice: true,
+        price: true,
         screen: true,
         capacity: true,
         color: true,
