@@ -21,8 +21,8 @@ model Product {
   name            String
   capacityAvailable String[]
   capacity        String
-  fullPrice    Int
-  price    Int
+  fullPrice       Int
+  price           Int
   colorsAvailable String[]
   color           String
   images          String[]
