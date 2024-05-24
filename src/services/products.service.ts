@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-import { Category, ErrorMessages, Product } from '../types';
+import { PrismaClient, Product } from '@prisma/client';
+import { Category, ErrorMessages } from '../types';
 
 type GetAll = (
   category: string,
@@ -63,25 +63,25 @@ export const getAll: GetAll = async (
     skip: perPage * (page - 1),
     take: perPage,
     orderBy,
-    select: {
-      id: true,
-      category: true,
-      slug: true,
-      name: true,
-      priceRegular: true,
-      priceDiscount: true,
-      screen: true,
-      capacity: true,
-      color: true,
-      ram: true,
-      images: true,
-    },
+    // select: {
+    //   id: true,
+    //   category: true,
+    //   slug: true,
+    //   name: true,
+    //   fullPrice: true,
+    //   price: true,
+    //   screen: true,
+    //   capacity: true,
+    //   color: true,
+    //   ram: true,
+    //   images: true,
+    // },
   });
 
   return result;
 };
 
-export const getById = async (id: number): Promise<Product | null> => {
+export const getById = async (id: number): Promise<Product> => {
   const result = await prisma.product.findUnique({
     where: { id },
   });
@@ -89,6 +89,20 @@ export const getById = async (id: number): Promise<Product | null> => {
   if (result === null) {
     throw new Error(ErrorMessages.NOT_FOUND);
   }
+
+  return result;
+};
+
+export const getRecommendedProductsList = async (id: number, color: string) => {
+  const result = await prisma.product.findMany({
+    where: {
+      color,
+      id: {
+        not: id,
+      },
+    },
+    take: 5,
+  });
 
   return result;
 };
@@ -105,8 +119,8 @@ export const getNewestProducts = async () => {
         category: true,
         slug: true,
         name: true,
-        priceRegular: true,
-        priceDiscount: true,
+        fullPrice: true,
+        price: true,
         screen: true,
         capacity: true,
         color: true,
