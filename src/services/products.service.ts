@@ -81,7 +81,7 @@ export const getAll: GetAll = async (
   return result;
 };
 
-export const getById = async (id: number): Promise<Product | null> => {
+export const getById = async (id: number): Promise<Product> => {
   const result = await prisma.product.findUnique({
     where: { id },
   });
@@ -89,6 +89,20 @@ export const getById = async (id: number): Promise<Product | null> => {
   if (result === null) {
     throw new Error(ErrorMessages.NOT_FOUND);
   }
+
+  return result;
+};
+
+export const getRecommendedProductsList = async (id: number, color: string) => {
+  const result = await prisma.product.findMany({
+    where: {
+      color,
+      id: {
+        not: id,
+      },
+    },
+    take: 5,
+  });
 
   return result;
 };
