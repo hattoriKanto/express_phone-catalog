@@ -10,10 +10,8 @@ export const GetDiscount: GetDiscount = async () => {
   FROM "Product"
   ORDER BY "fullPrice" - "price" DESC
   LIMIT 20;`;
-
   if (result.length === 0) {
     throw new Error(ErrorMessages.NOT_FOUND);
   }
-
   return result.sort((a, b) => b.category.localeCompare(a.category));
 };

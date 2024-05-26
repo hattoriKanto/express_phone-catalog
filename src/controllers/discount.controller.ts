@@ -16,7 +16,6 @@ export const GetDiscount: GetDiscount = async (req, res) => {
         return;
       }
     }
-
     res
       .status(HTTPCodes.INTERNAL_SERVER_ERROR)
       .send(ErrorMessages.INTERNAL_SERVER_ERROR);
