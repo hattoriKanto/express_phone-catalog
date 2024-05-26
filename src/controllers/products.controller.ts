@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import * as productsServices from '../services/products.service';
 import { ErrorMessages, HTTPCodes } from '../types';
 
-type GetAll = (req: Request, res: Response) => void;
+type Get = (req: Request, res: Response) => void;
 
-export const getAll: GetAll = async (req, res) => {
+export const getAll: Get = async (req, res) => {
   try {
     const { perPage, page, sortBy, query, minPrice, maxPrice } = req.query;
     const { category } = req.params;
@@ -45,55 +45,69 @@ export const getAll: GetAll = async (req, res) => {
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === ErrorMessages.NOT_FOUND) {
-        return (res.statusCode = HTTPCodes.NOT_FOUND);
-      }
-    }
-
-    res.statusCode = HTTPCodes.INTERNAL_SERVER_ERROR;
-  }
-};
-
-type GetById = (req: Request, res: Response) => void;
-
-export const GetById: GetById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const products = await productsServices.getById(+id);
-
-    res.status(HTTPCodes.OK).send(products);
-  } catch (error) {
-    if (error instanceof Error) {
-      if (error.message === ErrorMessages.NOT_FOUND) {
-        res.status(HTTPCodes.NOT_FOUND).send(ErrorMessages.NOT_FOUND);
-        return;
+        return res
+          .status(HTTPCodes.NOT_FOUND)
+          .json({ error: ErrorMessages.NOT_FOUND });
       }
     }
 
     res
       .status(HTTPCodes.INTERNAL_SERVER_ERROR)
-      .send(ErrorMessages.INTERNAL_SERVER_ERROR);
+      .json({ error: ErrorMessages.INTERNAL_SERVER_ERROR });
   }
+};
+
+export const getById: Get = async (req, res) => {
+  try {
+    const { id, category } = req.params;
+    const products = await productsServices.getById(+id, category);
+
+    res.status(HTTPCodes.OK).send(products);
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === ErrorMessages.NOT_FOUND) {
+        return res
+          .status(HTTPCodes.NOT_FOUND)
+          .json({ error: ErrorMessages.NOT_FOUND });
+      }
+    }
+
+    res
+      .status(HTTPCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: ErrorMessages.INTERNAL_SERVER_ERROR });
+  }
+};
+
+export const getByNamespaceId: Get = async (req, res) => {
+  const { namespaceId } = req.query as {
+    namespaceId: string;
+  };
+
+  const result = await productsServices.getProductsByNamespaceId(namespaceId);
+
+  if (!result.length) {
+    return res
+      .status(HTTPCodes.NOT_FOUND)
+      .json({ error: ErrorMessages.NOT_FOUND });
+  }
+
+  res.status(HTTPCodes.OK).send(result);
 };
 
 export const getNewestProducts = async (_: Request, res: Response) => {
   try {
     const products = await productsServices.getNewestProducts();
 
-    res.status(200).send(products);
+    res.status(HTTPCodes.OK).send(products);
   } catch (error) {
-    res.status(404).json({ error: 'list is empty' });
+    res.status(HTTPCodes.NOT_FOUND).json({ error: 'list is empty' });
   }
 };
 
-type getRecommendedProducts = (req: Request, res: Response) => void;
-
-export const getRecommendedProducts: getRecommendedProducts = async (
-  req,
-  res,
-) => {
+export const getRecommendedProducts: Get = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await productsServices.getById(+id);
+    const product = await productsServices.getById(+id, null);
     const { color } = product;
     const recommendedProductsList =
       await productsServices.getRecommendedProductsList(Number(id), color);
@@ -102,12 +116,13 @@ export const getRecommendedProducts: getRecommendedProducts = async (
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === ErrorMessages.NOT_FOUND) {
-        res.status(HTTPCodes.NOT_FOUND).send(ErrorMessages.NOT_FOUND);
-        return;
+        return res
+          .status(HTTPCodes.NOT_FOUND)
+          .json({ error: ErrorMessages.NOT_FOUND });
       }
     }
     res
       .status(HTTPCodes.INTERNAL_SERVER_ERROR)
-      .send(ErrorMessages.INTERNAL_SERVER_ERROR);
+      .json({ error: ErrorMessages.INTERNAL_SERVER_ERROR });
   }
 };

@@ -63,32 +63,48 @@ export const getAll: GetAll = async (
     skip: perPage * (page - 1),
     take: perPage,
     orderBy,
-    // select: {
-    //   id: true,
-    //   category: true,
-    //   slug: true,
-    //   name: true,
-    //   fullPrice: true,
-    //   price: true,
-    //   screen: true,
-    //   capacity: true,
-    //   color: true,
-    //   ram: true,
-    //   images: true,
-    // },
+    select: {
+      id: true,
+      category: true,
+      slug: true,
+      name: true,
+      fullPrice: true,
+      price: true,
+      screen: true,
+      capacity: true,
+      color: true,
+      ram: true,
+      images: true,
+    },
   });
 
-  return result;
+  return result as Product[];
 };
 
-export const getById = async (id: number): Promise<Product> => {
+export const getById = async (
+  id: number,
+  category: string | null,
+): Promise<Product> => {
+  if (category && !Object.values(Category).find(cat => cat === category)) {
+    throw new Error(ErrorMessages.NOT_FOUND);
+  }
+
   const result = await prisma.product.findUnique({
-    where: { id },
+    where: category ? { id, category } : { id },
+    // where: { id },
   });
 
   if (result === null) {
     throw new Error(ErrorMessages.NOT_FOUND);
   }
+
+  return result;
+};
+
+export const getProductsByNamespaceId = async (namespaceId: string) => {
+  const result = await prisma.product.findMany({
+    where: { namespaceId },
+  });
 
   return result;
 };
