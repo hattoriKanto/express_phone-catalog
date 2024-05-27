@@ -8,8 +8,8 @@ import {
 
 const router = Router();
 
-router.post('/', addFavorite);
-router.delete('/', removeFavorite);
-router.get('/:userId', getFavoritesByUser);
+router.post('/favorites', addFavorite);
+router.delete('/favorites', removeFavorite);
+router.get('/:userId/favorites', getFavoritesByUser);
 
 export default router;

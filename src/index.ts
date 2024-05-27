@@ -9,6 +9,7 @@ import { authRouter } from './routes/auth.route';
 import { PrismaClient } from '@prisma/client';
 import { errorMiddleware } from './middleware/errorMiddleware';
 import cookieParser from 'cookie-parser';
+import { userRouter } from './routes/users.route';
 
 export const prisma = new PrismaClient();
 
@@ -16,12 +17,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(
-  cors({
-    origin: process.env.CLIENT_HOST,
-    credentials: true,
-  }),
-);
+app.use(cors());
 app.use(cookieParser());
 app.use(express.static('public'));
 
@@ -30,18 +26,15 @@ app.get('/', (_, res) => {
 });
 
 app.use(authRouter);
+app.use(userRouter);
 app.use('/products', productsRouter);
-app.use('/favorites', favoriteRouter);
+app.use('/users', favoriteRouter);
 app.use('/discount', discountRouter.router);
 
 app.use(errorMiddleware);
 app.listen(port, async () => {
   console.log(`Server running on http://localhost:${port}`);
   // try {
-  //   // if (process.env.TEST_CONNECTION === 'true') {
-  //   //   await testConnection();
-  //   // }
-
   //   if (process.env.SEEDING === 'true') {
   //     await seedDatabase();
   //   }
