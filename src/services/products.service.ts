@@ -1,5 +1,6 @@
-import { PrismaClient, Product } from '@prisma/client';
-import { Category, ErrorMessages } from '../types';
+import { Category, BasicProduct, ErrorMessages } from '../types';
+import { prisma } from '..';
+import { Product } from '@prisma/client';
 
 type GetAll = (
   category: string,
@@ -10,9 +11,7 @@ type GetAll = (
     maxPrice?: number;
   },
   sortParams: { sortBy?: string },
-) => Promise<Product[]>;
-
-const prisma = new PrismaClient();
+) => Promise<BasicProduct[]>;
 
 export const getAll: GetAll = async (
   category,
@@ -78,11 +77,11 @@ export const getAll: GetAll = async (
     },
   });
 
-  return result as Product[];
+  return result;
 };
 
 export const getById = async (
-  id: number,
+  slug: string,
   category: string | null,
 ): Promise<Product> => {
   if (category && !Object.values(Category).find(cat => cat === category)) {
@@ -90,8 +89,7 @@ export const getById = async (
   }
 
   const result = await prisma.product.findUnique({
-    where: category ? { id, category } : { id },
-    // where: { id },
+    where: category ? { slug, category } : { slug },
   });
 
   if (result === null) {
@@ -109,12 +107,15 @@ export const getProductsByNamespaceId = async (namespaceId: string) => {
   return result;
 };
 
-export const getRecommendedProductsList = async (id: number, color: string) => {
+export const getRecommendedProductsList = async (
+  slug: string,
+  color: string,
+) => {
   const result = await prisma.product.findMany({
     where: {
       color,
-      id: {
-        not: id,
+      slug: {
+        not: slug,
       },
     },
     take: 5,

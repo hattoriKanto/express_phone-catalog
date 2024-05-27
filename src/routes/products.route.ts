@@ -11,7 +11,7 @@ const router = Router();
 
 router.get('/new', getNewestProducts);
 router.get('/:id/recommended', getRecommendedProducts);
-router.get('/:category/:id', getById);
+router.get('/:category/:slug', getById);
 router.get('/:category', getAll);
 router.get('/', getByNamespaceId);
 
