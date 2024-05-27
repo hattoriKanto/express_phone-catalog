@@ -4,8 +4,6 @@ import { userService } from '../services/user.service';
 import { jwtService } from '../services/jwt.service';
 import { ApiError } from '../exceptions/api.error';
 import bcrypt from 'bcrypt';
-import { tokenService } from '../services/token.service';
-import { JwtPayload } from 'jsonwebtoken';
 import { User } from '@prisma/client';
 
 function validateEmail(value: string) {
@@ -68,56 +66,9 @@ async function login(req: Request, res: Response) {
   await sendAuthentication(res, user);
 }
 
-async function refresh(req: Request, res: Response) {
-  const { refreshToken } = req.cookies;
-  const userData = jwtService.validateRefreshToken(refreshToken);
-
-  const token = await tokenService.getByToken(refreshToken);
-
-  if (!userData || !token) {
-    throw ApiError.unauthorized({ jwtToken: 'Jwt Token expired' });
-  }
-
-  if (typeof userData !== 'object' || !userData.username) {
-    throw ApiError.unauthorized({ jwtToken: 'Invalid JWT token' });
-  }
-
-  const user = await userService.findByUsername(userData.username);
-
-  if (!user) {
-    throw ApiError.unauthorized({ jwtToken: 'Invalid JWT token' });
-  }
-
-  await sendAuthentication(res, user);
-}
-
-async function logout(req: Request, res: Response) {
-  const { refreshToken } = req.cookies;
-
-  const userData = jwtService.validateRefreshToken(refreshToken) as JwtPayload;
-
-  res.clearCookie('refreshToken');
-
-  if (userData) {
-    await tokenService.remove(userData.id);
-  }
-
-  res.sendStatus(204);
-}
-
 async function sendAuthentication(res: Response, user: User) {
   const userData = userService.normalize(user);
   const accessToken = jwtService.generateAccessToken(userData);
-  const refreshToken = jwtService.generateRefreshToken(userData);
-
-  await tokenService.save(user.id, refreshToken);
-
-  res.cookie('refreshToken', refreshToken, {
-    maxAge: 30 * 24 * 60 * 60 * 1000,
-    httpOnly: true,
-    sameSite: 'none',
-    secure: true,
-  });
 
   res.send({
     user: userData,
@@ -136,6 +87,4 @@ export const authController = {
   register,
   login,
   users,
-  refresh,
-  logout,
 };
