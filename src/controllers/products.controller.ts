@@ -30,12 +30,15 @@ export const getAll: Get = async (req, res) => {
     if (typeof query === 'string') {
       filterParams.query = query;
     }
+
     if (typeof Number(minPrice) === 'number') {
       filterParams.minPrice = Number(minPrice);
     }
+
     if (typeof Number(maxPrice) === 'number') {
       filterParams.maxPrice = Number(maxPrice);
     }
+
     const products = await productsServices.getAll(
       category,
       pageParams,
