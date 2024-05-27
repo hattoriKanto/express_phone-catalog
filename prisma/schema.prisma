@@ -46,15 +46,8 @@ model User {
   email     String
   favorites Favorite[]
   cartItems CartItem[]
-  token     Token?
 }
 
-model Token {
-  id           Int    @id @default(autoincrement())
-  refreshToken String
-  userId       Int    @unique
-  user         User   @relation(fields: [userId], references: [id])
-}
 
 model Favorite {
   id        Int     @id @default(autoincrement())

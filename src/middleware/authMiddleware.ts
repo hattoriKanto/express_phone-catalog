@@ -24,7 +24,7 @@ export function authMiddleware(
   const userData = jwtService.validateAccessToken(accessToken);
 
   if (!userData) {
-    throw ApiError.unauthorized({ authMiddleware: 'Error in middleware' });
+    ApiError.unauthorized({ authMiddleware: 'Error in middleware' });
   }
 
   next();
