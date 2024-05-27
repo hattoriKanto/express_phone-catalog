@@ -59,10 +59,10 @@ export const getAll: Get = async (req, res) => {
 
 export const getById: Get = async (req, res) => {
   try {
-    const { id, category } = req.params;
-    const products = await productsServices.getById(+id, category);
+    const { slug, category } = req.params;
+    const product = await productsServices.getById(slug, category);
 
-    res.status(HTTPCodes.OK).send(products);
+    res.status(HTTPCodes.OK).send(product);
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === ErrorMessages.NOT_FOUND) {
@@ -106,11 +106,11 @@ export const getNewestProducts = async (_: Request, res: Response) => {
 
 export const getRecommendedProducts: Get = async (req, res) => {
   try {
-    const { id } = req.params;
-    const product = await productsServices.getById(+id, null);
+    const { slug } = req.params;
+    const product = await productsServices.getById(slug, null);
     const { color } = product;
     const recommendedProductsList =
-      await productsServices.getRecommendedProductsList(Number(id), color);
+      await productsServices.getRecommendedProductsList(slug, color);
 
     res.status(HTTPCodes.OK).send(recommendedProductsList);
   } catch (error) {

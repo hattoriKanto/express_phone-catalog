@@ -1,6 +1,6 @@
-import { PrismaClient, Product } from '@prisma/client';
+import { Product } from '@prisma/client';
 import { ErrorMessages } from '../types';
-const prisma = new PrismaClient();
+import { prisma } from '..';
 
 type GetDiscount = () => Promise<Product[]>;
 
