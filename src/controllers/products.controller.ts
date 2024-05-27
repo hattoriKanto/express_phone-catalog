@@ -1,16 +1,16 @@
 import { Request, Response } from 'express';
 import * as productsServices from '../services/products.service';
 import { ErrorMessages, HTTPCodes } from '../types';
+import { prisma } from '..';
 
 type Get = (req: Request, res: Response) => void;
 
 export const getAll: Get = async (req, res) => {
   try {
-    const { perPage, page, sortBy, searchQuery, minPrice, maxPrice } =
-      req.query;
+    const { perPage = 4, page, sortBy, query, minPrice, maxPrice } = req.query;
     const { category } = req.params;
     const filterParams: {
-      searchQuery?: string;
+      query?: string;
       minPrice?: number;
       maxPrice?: number;
     } = {};
@@ -27,8 +27,8 @@ export const getAll: Get = async (req, res) => {
       sortParams.sortBy = sortBy;
     }
 
-    if (typeof searchQuery === 'string') {
-      filterParams.searchQuery = searchQuery;
+    if (typeof query === 'string') {
+      filterParams.query = query;
     }
 
     if (typeof Number(minPrice) === 'number') {
@@ -46,7 +46,37 @@ export const getAll: Get = async (req, res) => {
       sortParams,
     );
 
-    res.status(HTTPCodes.OK).send(products);
+    const [productCount, maxPriceInfo, minPriceInfo] = await Promise.all([
+      prisma.product.count({
+        where: {
+          category,
+        },
+      }),
+      prisma.product.findFirst({
+        where: { category },
+        orderBy: {
+          price: 'desc',
+        },
+      }),
+      prisma.product.findFirst({
+        where: { category },
+        orderBy: {
+          price: 'asc',
+        },
+      }),
+    ]);
+
+    const maxPriceResult = maxPriceInfo ? maxPriceInfo.price : 0;
+    const minPriceResult = minPriceInfo ? minPriceInfo.price : 0;
+    const pageCount = Math.ceil(productCount / Number(perPage));
+
+    res.status(HTTPCodes.OK).send({
+      products,
+      productCount,
+      maxPrice: maxPriceResult,
+      minPrice: minPriceResult,
+      pageCount,
+    });
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === ErrorMessages.NOT_FOUND) {
@@ -59,6 +89,27 @@ export const getAll: Get = async (req, res) => {
     res
       .status(HTTPCodes.INTERNAL_SERVER_ERROR)
       .json({ error: ErrorMessages.INTERNAL_SERVER_ERROR });
+  }
+};
+
+export const getCategoryInfo: Get = async (req, res) => {
+  try {
+    const { category } = req.params;
+    const categoryInfo = await productsServices.getCategoryInfo(category);
+
+    res.status(HTTPCodes.OK).send(categoryInfo);
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === ErrorMessages.NOT_FOUND) {
+        return res
+          .status(HTTPCodes.NOT_FOUND)
+          .json({ error: ErrorMessages.NOT_FOUND });
+      }
+    } else {
+      res
+        .status(HTTPCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: ErrorMessages.INTERNAL_SERVER_ERROR });
+    }
   }
 };
 
