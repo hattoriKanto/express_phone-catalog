@@ -6,10 +6,11 @@ type Get = (req: Request, res: Response) => void;
 
 export const getAll: Get = async (req, res) => {
   try {
-    const { perPage, page, sortBy, query, minPrice, maxPrice } = req.query;
+    const { perPage, page, sortBy, searchQuery, minPrice, maxPrice } =
+      req.query;
     const { category } = req.params;
     const filterParams: {
-      query?: string;
+      searchQuery?: string;
       minPrice?: number;
       maxPrice?: number;
     } = {};
@@ -26,21 +27,25 @@ export const getAll: Get = async (req, res) => {
       sortParams.sortBy = sortBy;
     }
 
-    if (typeof query === 'string') {
-      filterParams.query = query;
+    if (typeof searchQuery === 'string') {
+      filterParams.searchQuery = searchQuery;
     }
+
     if (typeof Number(minPrice) === 'number') {
       filterParams.minPrice = Number(minPrice);
     }
+
     if (typeof Number(maxPrice) === 'number') {
       filterParams.maxPrice = Number(maxPrice);
     }
+
     const products = await productsServices.getAll(
       category,
       pageParams,
       filterParams,
       sortParams,
     );
+
     res.status(HTTPCodes.OK).send(products);
   } catch (error) {
     if (error instanceof Error) {
