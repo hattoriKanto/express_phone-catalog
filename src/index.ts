@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import favoriteRouter from './routes/favorites.route';
 import productsRouter from './routes/products.route';
+import cartRouter from './routes/cart.route';
 import * as discountRouter from './routes/discount.route';
 // import { seedDatabase } from './utils/seeding';
 import cors from 'cors';
@@ -33,6 +34,7 @@ app.use(authRouter);
 app.use('/products', productsRouter);
 app.use('/favorites', favoriteRouter);
 app.use('/discount', discountRouter.router);
+app.use('/cart', cartRouter);
 
 app.use(errorMiddleware);
 app.listen(port, async () => {
