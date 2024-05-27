@@ -110,7 +110,7 @@ export const getProductsByNamespaceId = async (namespaceId: string) => {
 export const getRecommendedProductsList = async (
   slug: string,
   color: string,
-) => {
+): Promise<BasicProduct[]> => {
   const result = await prisma.product.findMany({
     where: {
       color,
@@ -118,10 +118,25 @@ export const getRecommendedProductsList = async (
         not: slug,
       },
     },
-    take: 5,
+    select: {
+      id: true,
+      category: true,
+      slug: true,
+      name: true,
+      fullPrice: true,
+      price: true,
+      screen: true,
+      capacity: true,
+      color: true,
+      ram: true,
+      images: true,
+    },
   });
+  const sortedProducts = result.sort(
+    (product1, product2) => product1.price - product2.price,
+  );
 
-  return result;
+  return sortedProducts;
 };
 
 export const getNewestProducts = async () => {
