@@ -6,7 +6,7 @@ type GetAll = (
   category: string,
   pagParams: { perPage?: number; page?: number },
   filterParams: {
-    query?: string;
+    searchQuery?: string;
     minPrice?: number;
     maxPrice?: number;
   },
@@ -28,7 +28,7 @@ export const getAll: GetAll = async (
     [sortParams.sortBy || 'name']: 'asc',
   };
 
-  const { query, minPrice, maxPrice } = filterParams;
+  const { searchQuery, minPrice, maxPrice } = filterParams;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const filters: any = {};
@@ -51,11 +51,27 @@ export const getAll: GetAll = async (
     };
   }
 
-  if (query) {
+  if (searchQuery) {
     filters.name = {
-      contains: query,
+      contains: searchQuery,
     };
   }
+
+  // if (searchQuery) {
+  //   const searchWords = searchQuery
+  //     .split(' ')
+  //     .map(word => word.trim())
+  //     .filter(word => word.length > 0);
+  //   const regexPattern =
+  //     searchWords.map(word => `(?=.*${word})`).join('') + '.*';
+
+  //   filters.name = {
+  //     matches: {
+  //       pattern: regexPattern,
+  //       caseSensitive: false,
+  //     },
+  //   };
+  // }
 
   const result = await prisma.product.findMany({
     where: { ...filters, category: category },
