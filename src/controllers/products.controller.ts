@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 import * as productsServices from '../services/products.service';
 import { ErrorMessages, HTTPCodes } from '../types';
@@ -14,10 +15,13 @@ export const getAll: Get = async (req, res) => {
       minPrice?: number;
       maxPrice?: number;
     } = {};
-    const pageParams: { perPage?: number; page?: number } = {};
+    const pageParams: { perPage?: number | string; page?: number } = {};
     const sortParams: { sortBy?: string } = {};
     if (typeof Number(perPage) === 'number') {
       pageParams.perPage = Number(perPage);
+    }
+    if (perPage === 'All') {
+      pageParams.perPage = 'All';
     }
     if (typeof Number(page) === 'number') {
       pageParams.page = Number(page);
@@ -46,10 +50,30 @@ export const getAll: Get = async (req, res) => {
       sortParams,
     );
 
+    const filters: any = {};
+    filters.category = {
+      equals: category,
+    };
+
+    if (filterParams.query) {
+      const queryWords: string[] = filterParams.query
+        .split(' ')
+        .filter(word => word.trim() !== '');
+
+      if (queryWords.length > 0) {
+        filters.AND = queryWords.map(word => ({
+          name: {
+            contains: word,
+            mode: 'insensitive',
+          },
+        }));
+      }
+    }
+
     const [productCount, maxPriceInfo, minPriceInfo] = await Promise.all([
       prisma.product.count({
         where: {
-          category,
+          ...filters,
         },
       }),
       prisma.product.findFirst({
