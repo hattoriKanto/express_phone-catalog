@@ -6,7 +6,7 @@ type GetAll = (
   category: string,
   pagParams: { perPage?: number; page?: number },
   filterParams: {
-    searchQuery?: string;
+    query?: string;
     minPrice?: number;
     maxPrice?: number;
   },
@@ -28,7 +28,7 @@ export const getAll: GetAll = async (
     [sortParams.sortBy || 'name']: 'asc',
   };
 
-  const { searchQuery, minPrice, maxPrice } = filterParams;
+  const { query, minPrice, maxPrice } = filterParams;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const filters: any = {};
@@ -51,27 +51,18 @@ export const getAll: GetAll = async (
     };
   }
 
-  if (searchQuery) {
-    filters.name = {
-      contains: searchQuery,
-    };
+  if (query) {
+    const queryWords = query.split(' ').filter(word => word.trim() !== '');
+
+    if (queryWords.length > 0) {
+      filters.AND = queryWords.map(word => ({
+        name: {
+          contains: word,
+          mode: 'insensitive',
+        },
+      }));
+    }
   }
-
-  // if (searchQuery) {
-  //   const searchWords = searchQuery
-  //     .split(' ')
-  //     .map(word => word.trim())
-  //     .filter(word => word.length > 0);
-  //   const regexPattern =
-  //     searchWords.map(word => `(?=.*${word})`).join('') + '.*';
-
-  //   filters.name = {
-  //     matches: {
-  //       pattern: regexPattern,
-  //       caseSensitive: false,
-  //     },
-  //   };
-  // }
 
   const result = await prisma.product.findMany({
     where: { ...filters, category: category },
