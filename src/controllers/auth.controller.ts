@@ -69,12 +69,10 @@ async function login(req: Request, res: Response) {
 async function sendAuthentication(res: Response, user: User) {
   const userData = userService.normalize(user);
   const accessToken = jwtService.generateAccessToken(userData);
-  const tokenExpires = Date.now() + parseInt(process.env.JWT_EXPIRES!);
 
   res.send({
     user: userData,
     accessToken,
-    tokenExpires,
   });
 }
 
