@@ -27,7 +27,6 @@ export function authMiddleware(
     ApiError.unauthorized({ authMiddleware: 'Error in middleware' });
   }
 
-
   const currentTimestamp = Math.floor(Date.now() / 1000);
 
   if (

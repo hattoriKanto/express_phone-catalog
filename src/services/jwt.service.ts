@@ -3,7 +3,7 @@ import { NormalizedUser } from '../types/User';
 
 function generateAccessToken(user: NormalizedUser) {
   return jwt.sign(user, process.env.JWT_KEY!, {
-    expiresIn: process.env.JWT_EXPIRES,
+    expiresIn: '10y',
   });
 }
 
