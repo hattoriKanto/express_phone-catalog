@@ -11,6 +11,6 @@ const router = Router();
 
 router.post('/favorites', /*authMiddleware, */ addFavorite);
 router.delete('/favorites', /*authMiddleware,*/ removeFavorite);
-router.get('/:userId/favorites', /*authMiddleware,*/ getFavoritesByUser);
+router.get('/user/favorites', /*authMiddleware,*/ getFavoritesByUser);
 
 export default router;

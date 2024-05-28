@@ -3,6 +3,7 @@ import { prisma } from '..';
 import { jwtService } from '../services/jwt.service';
 import { ApiError } from '../exceptions/api.error';
 import { JwtPayload } from 'jsonwebtoken';
+import { HTTPCodes } from '../types';
 
 const validateInput = async (id: number, productId: number, res: Response) => {
   if (
@@ -53,7 +54,7 @@ export const addItemCart = async (req: Request, res: Response) => {
 };
 
 export const deleteCartItem = async (req: Request, res: Response) => {
-  const { productId: productIdReq } = req.query;
+  const { productId: productIdReq } = req.body;
   const productId = Number(productIdReq);
   const token = req.headers.authorization?.split(' ')[1];
 
@@ -65,11 +66,27 @@ export const deleteCartItem = async (req: Request, res: Response) => {
   await validateInput(id, productId, res);
   await prisma.cartItem.delete({
     where: {
-      userId_productId: { userId: id, productId },
+      userId_productId: {
+        userId: id,
+        productId,
+      },
     },
   });
 
   res.sendStatus(204);
+};
+
+export const deleteAll = async (req: Request, res: Response) => {
+  const token = req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return ApiError.unauthorized({ getCart: 'Bad token' });
+  }
+
+  const { id } = jwtService.validateAccessToken(token) as JwtPayload;
+
+  await prisma.cartItem.deleteMany({ where: { userId: id } });
+  res.sendStatus(HTTPCodes.NO_CONTENT);
 };
 
 export const changeQuantity = async (req: Request, res: Response) => {
@@ -90,6 +107,7 @@ export const changeQuantity = async (req: Request, res: Response) => {
     data: {
       quantity,
     },
+    include: { product: true },
   });
   res.json(updatedCartItem);
 };
@@ -109,6 +127,9 @@ export const getCart = async (req: Request, res: Response) => {
     },
     include: {
       product: true,
+    },
+    orderBy: {
+      productId: 'asc',
     },
   });
 
