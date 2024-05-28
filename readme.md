@@ -6,10 +6,16 @@
 
 - Prisma
 - PostgreSQL
-- Swagger
 - Express.js
 - Eslint
 - Prettier
 - Husky
 - Typescript
 - Lint-staged
+
+## Needed .env
+
+- DATABASE_URL
+- SEEDING
+- PORT
+- JWT_KEY

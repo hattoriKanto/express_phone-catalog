@@ -6,6 +6,9 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "prestart": "npx prisma generate",
+    "prerun": "npx prisma migrate",
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "eslint . --ext .js,.ts --fix",
     "prepare": "husky install"

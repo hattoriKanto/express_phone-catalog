@@ -4,7 +4,7 @@ import favoriteRouter from './routes/favorites.route';
 import productsRouter from './routes/products.route';
 import cartRouter from './routes/cart.route';
 import * as discountRouter from './routes/discount.route';
-// import { seedDatabase } from './utils/seeding';
+import { seedDatabase } from './utils/seeding';
 import cors from 'cors';
 import { authRouter } from './routes/auth.route';
 import { PrismaClient } from '@prisma/client';
@@ -36,11 +36,11 @@ app.use('/cart', cartRouter);
 app.use(errorMiddleware);
 app.listen(port, async () => {
   console.log(`Server running on http://localhost:${port}`);
-  // try {
-  //   if (process.env.SEEDING === 'true') {
-  //     await seedDatabase();
-  //   }
-  // } catch (error) {
-  //   console.error('Error during init:', error);
-  // }
+  try {
+    if (process.env.SEEDING === 'true') {
+      await seedDatabase();
+    }
+  } catch (error) {
+    console.error('Error during init:', error);
+  }
 });
