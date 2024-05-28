@@ -2,7 +2,9 @@ import jwt from 'jsonwebtoken';
 import { NormalizedUser } from '../types/User';
 
 function generateAccessToken(user: NormalizedUser) {
-  return jwt.sign(user, process.env.JWT_KEY!, { expiresIn: '12h' });
+  return jwt.sign(user, process.env.JWT_KEY!, {
+    expiresIn: process.env.JWT_EXPIRES,
+  });
 }
 
 function validateAccessToken(token: string) {

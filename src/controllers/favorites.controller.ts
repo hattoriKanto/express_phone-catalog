@@ -1,20 +1,30 @@
 import { Request, Response } from 'express';
 import { prisma } from '..';
+import { ApiError } from '../exceptions/api.error';
+import { jwtService } from '../services/jwt.service';
+import { JwtPayload } from 'jsonwebtoken';
 
 export const addFavorite = async (req: Request, res: Response) => {
-  const { userId, productId } = req.body;
+  const { productId } = req.body;
+  const token = req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return ApiError.unauthorized({ addFavorite: 'Bad request' });
+  }
+
+  const { id } = jwtService.validateAccessToken(token) as JwtPayload;
 
   if (
-    !userId ||
+    !id ||
     !productId ||
-    typeof userId !== 'number' ||
+    typeof id !== 'number' ||
     typeof productId !== 'number'
   ) {
     return res.sendStatus(422);
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: userId },
+    where: { id },
   });
 
   if (!user) {
@@ -31,7 +41,7 @@ export const addFavorite = async (req: Request, res: Response) => {
 
   const newFavorite = await prisma.favorite.create({
     data: {
-      userId,
+      userId: id,
       productId,
     },
   });
@@ -40,11 +50,18 @@ export const addFavorite = async (req: Request, res: Response) => {
 };
 
 export const removeFavorite = async (req: Request, res: Response) => {
-  const { userId, productId } = req.body;
+  const { productId } = req.body;
+  const token = req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return ApiError.unauthorized({ addFavorite: 'Bad request' });
+  }
+
+  const { id } = jwtService.validateAccessToken(token) as JwtPayload;
 
   if (
-    !userId ||
-    typeof userId !== 'number' ||
+    !id ||
+    typeof id !== 'number' ||
     !productId ||
     typeof productId !== 'number'
   ) {
@@ -52,7 +69,7 @@ export const removeFavorite = async (req: Request, res: Response) => {
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: userId },
+    where: { id },
   });
 
   if (!user) {
@@ -69,7 +86,7 @@ export const removeFavorite = async (req: Request, res: Response) => {
 
   await prisma.favorite.deleteMany({
     where: {
-      userId,
+      userId: id,
       productId,
     },
   });
@@ -78,15 +95,20 @@ export const removeFavorite = async (req: Request, res: Response) => {
 };
 
 export const getFavoritesByUser = async (req: Request, res: Response) => {
-  const { userId } = req.params;
-  const normalizedUserId = parseInt(userId);
+  const token = req.headers.authorization?.split(' ')[1];
 
-  if (!userId || typeof normalizedUserId !== 'number') {
+  if (!token) {
+    return ApiError.unauthorized({ addFavorite: 'Bad request' });
+  }
+
+  const { id } = jwtService.validateAccessToken(token) as JwtPayload;
+
+  if (!id || typeof id !== 'number') {
     return res.status(422).json({ error: 'Invalid user ID' });
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: normalizedUserId },
+    where: { id },
   });
 
   if (!user) {
@@ -94,7 +116,7 @@ export const getFavoritesByUser = async (req: Request, res: Response) => {
   }
 
   const favorites = await prisma.favorite.findMany({
-    where: { userId: normalizedUserId },
+    where: { userId: id },
     include: { product: true },
   });
 
