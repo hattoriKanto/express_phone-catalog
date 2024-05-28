@@ -6,11 +6,10 @@ type Get = (req: Request, res: Response) => void;
 
 export const getAll: Get = async (req, res) => {
   try {
-    const { perPage, page, sortBy, searchQuery, minPrice, maxPrice } =
-      req.query;
+    const { perPage, page, sortBy, query, minPrice, maxPrice } = req.query;
     const { category } = req.params;
     const filterParams: {
-      searchQuery?: string;
+      query?: string;
       minPrice?: number;
       maxPrice?: number;
     } = {};
@@ -27,8 +26,8 @@ export const getAll: Get = async (req, res) => {
       sortParams.sortBy = sortBy;
     }
 
-    if (typeof searchQuery === 'string') {
-      filterParams.searchQuery = searchQuery;
+    if (typeof query === 'string') {
+      filterParams.query = query;
     }
 
     if (typeof Number(minPrice) === 'number') {
