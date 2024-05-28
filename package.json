@@ -9,8 +9,8 @@
     "build": "tsc",
     "prestart": "npx prisma generate",
     "prerun": "npx prisma migrate",
-    "lint": "eslint . --ext .js,.ts",
-    "lint:fix": "eslint . --ext .js,.ts --fix",
+    "lint": "eslint . --ext .js,.ts --ignore-path .eslintignore",
+    "lint:fix": "eslint . --ext .js,.ts --fix --ignore-path .eslintignore",
     "prepare": "husky install"
   },
   "keywords": [],
