@@ -78,7 +78,9 @@ async function sendAuthentication(res: Response, user: User) {
 
 async function users(_: Request, res: Response) {
   const allUsers = await userService.getAllUsers();
-  const normalizedUsers = allUsers.map(user => userService.normalize(user));
+  const normalizedUsers = allUsers.map((user: User) =>
+    userService.normalize(user),
+  );
 
   res.send(normalizedUsers);
 }
