@@ -27,5 +27,11 @@ export function authMiddleware(
     ApiError.unauthorized({ authMiddleware: 'Error in middleware' });
   }
 
+  const expired = Date.now() >= localStorage.get('tokenExpires');
+
+  if (expired) {
+    throw ApiError.unauthorized({ authMiddleware: 'Token expired' });
+  }
+
   next();
 }
