@@ -4,7 +4,7 @@ import { Product } from '@prisma/client';
 
 type GetAll = (
   category: string,
-  pagParams: { perPage?: number; page?: number },
+  pagParams: { perPage?: number | string; page?: number },
   filterParams: {
     query?: string;
     minPrice?: number;
@@ -22,8 +22,16 @@ export const getAll: GetAll = async (
   if (!Object.values(Category).find(cat => cat === category)) {
     throw new Error(ErrorMessages.NOT_FOUND);
   }
-  const perPage = pageParams.perPage || 4;
-  const page = pageParams.page || 1;
+  let pagePar = {};
+  if (pageParams.perPage === 'All') {
+    pagePar = {};
+  } else {
+    const perPage = pageParams.perPage || 4;
+    const page = pageParams.page || 1;
+    const skip = Number(perPage) * (page - 1);
+    const take = perPage;
+    pagePar = { skip: skip, take: take };
+  }
   const orderBy = {
     [sortParams.sortBy || 'name']: 'asc',
   };
@@ -66,8 +74,7 @@ export const getAll: GetAll = async (
 
   const result = await prisma.product.findMany({
     where: { ...filters, category: category },
-    skip: perPage * (page - 1),
-    take: perPage,
+    ...pagePar,
     orderBy,
     select: {
       id: true,

@@ -14,10 +14,13 @@ export const getAll: Get = async (req, res) => {
       minPrice?: number;
       maxPrice?: number;
     } = {};
-    const pageParams: { perPage?: number; page?: number } = {};
+    const pageParams: { perPage?: number | string; page?: number } = {};
     const sortParams: { sortBy?: string } = {};
     if (typeof Number(perPage) === 'number') {
       pageParams.perPage = Number(perPage);
+    }
+    if (perPage === 'All') {
+      pageParams.perPage = 'All';
     }
     if (typeof Number(page) === 'number') {
       pageParams.page = Number(page);
