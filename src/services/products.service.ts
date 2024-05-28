@@ -6,7 +6,7 @@ type GetAll = (
   category: string,
   pagParams: { perPage?: number; page?: number },
   filterParams: {
-    searchQuery?: string;
+    query?: string;
     minPrice?: number;
     maxPrice?: number;
   },
@@ -28,7 +28,7 @@ export const getAll: GetAll = async (
     [sortParams.sortBy || 'name']: 'asc',
   };
 
-  const { searchQuery, minPrice, maxPrice } = filterParams;
+  const { query, minPrice, maxPrice } = filterParams;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const filters: any = {};
@@ -51,14 +51,14 @@ export const getAll: GetAll = async (
     };
   }
 
-  if (searchQuery) {
+  if (query) {
     filters.name = {
-      contains: searchQuery,
+      contains: query,
     };
   }
 
-  // if (searchQuery) {
-  //   const searchWords = searchQuery
+  // if (query) {
+  //   const searchWords = query
   //     .split(' ')
   //     .map(word => word.trim())
   //     .filter(word => word.length > 0);
