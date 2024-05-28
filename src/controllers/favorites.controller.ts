@@ -1,8 +1,18 @@
 import { Request, Response } from 'express';
 import { prisma } from '..';
+import { ApiError } from '../exceptions/api.error';
+import { jwtService } from '../services/jwt.service';
+import { JwtPayload } from 'jsonwebtoken';
 
 export const addFavorite = async (req: Request, res: Response) => {
   const { userId, productId } = req.body;
+  const token = req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return ApiError.unauthorized({ addFavorite: 'Bad request' });
+  }
+
+  const { id } = jwtService.validateAccessToken(token) as JwtPayload;
 
   if (
     !userId ||
@@ -14,7 +24,7 @@ export const addFavorite = async (req: Request, res: Response) => {
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: userId },
+    where: { id },
   });
 
   if (!user) {

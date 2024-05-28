@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '..';
+import { jwtService } from '../services/jwt.service';
+import { ApiError } from '../exceptions/api.error';
+import { JwtPayload } from 'jsonwebtoken';
 
 const validateInput = async (
-  userId: unknown,
-  productId: unknown,
+  userId: number,
+  productId: number,
   res: Response,
 ) => {
   if (
@@ -79,14 +80,22 @@ export const changeQuantity = async (req: Request, res: Response) => {
 };
 
 export const getCart = async (req: Request, res: Response) => {
-  const { userId } = req.body;
+  const token = req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return ApiError.unauthorized({ getCart: 'Bad token' });
+  }
+
+  const { id } = jwtService.validateAccessToken(token) as JwtPayload;
+
   const cart = await prisma.cartItem.findMany({
     where: {
-      userId,
+      userId: id,
     },
     include: {
       product: true,
     },
   });
+
   res.json(cart);
 };
