@@ -8,7 +8,7 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "prestart": "npx prisma generate",
-    "prerun": "npx prisma migrate",
+    "prerun": "npx prisma migrate dev",
     "lint": "eslint . --ext .js,.ts --ignore-path .eslintignore",
     "lint:fix": "eslint . --ext .js,.ts --fix --ignore-path .eslintignore",
     "prepare": "husky install"

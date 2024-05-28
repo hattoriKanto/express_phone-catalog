@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 import { userService } from '../services/user.service';
 import { jwtService } from '../services/jwt.service';
 import { ApiError } from '../exceptions/api.error';
 import bcrypt from 'bcrypt';
-import { User } from '@prisma/client';
+// import { User } from '@prisma/client';
+import { User } from '../types/User';
 
 function validateEmail(value: string) {
   if (!value) {
