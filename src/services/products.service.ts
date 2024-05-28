@@ -87,6 +87,23 @@ export const getAll: GetAll = async (
   return result;
 };
 
+export const getCategoryInfo = async (category: string) => {
+  if (!Object.values(Category).find(cat => cat === category)) {
+    throw new Error(ErrorMessages.NOT_FOUND);
+  }
+  const result = await prisma.product.findMany({
+    where: { category },
+    orderBy: {
+      price: 'desc',
+    },
+    select: {
+      price: true,
+    },
+    take: 1,
+  });
+  return result;
+};
+
 export const getById = async (
   slug: string,
   category: string | null,
