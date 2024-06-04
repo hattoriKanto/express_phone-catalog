@@ -30,5 +30,5 @@ The backend repository complements the front end of the Nice Gadget website, pro
 
 **Please note**: Due to limitations on render.com where the website is deployed, there may be a delay of 1-2 minutes upon accessing the site as the server initializes.
 
-[FRONTEND DEMO](https://fs-jan24-midnight-coup.github.io/react_phone-catalog)
-[FRONTEND REPO](https://github.com/hattoriKanto/react_phone-catalog)
+- [FRONTEND DEMO](https://fs-jan24-midnight-coup.github.io/react_phone-catalog)
+- [FRONTEND REPO](https://github.com/hattoriKanto/react_phone-catalog)
