@@ -1,6 +1,6 @@
 # The Nice Gadget website - Backend repo
 
-The backend repository complements the front end of the Electronic Store website, providing essential server-side functionalities. Key features include:
+The backend repository complements the front end of the Nice Gadget website, providing essential server-side functionalities. Key features include:
 
 - **Database Management**: Utilizes PostgreSQL as the database management system for storing product information, user data, and session details.
 - **ORM Framework**: Employs Prisma for efficient database access and management through its modern and type-safe ORM (Object-Relational Mapping) capabilities.
